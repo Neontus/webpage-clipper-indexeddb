@@ -7,21 +7,31 @@
 function extractTextContent(doc) {
   // Get all text nodes from the body
   const bodyText = doc.body.innerText || doc.body.textContent || '';
+  const wordCount = bodyText.trim().split(/\s+/).length;
+  const readTime = wordCount / 150;
   
   // Limit to first 100 words
   const words = bodyText.split(/\s+/);
   const firstHundredWords = words.slice(0, 100).join(' ');
   
-  return firstHundredWords + (words.length > 100 ? '...' : '');
+  return {
+    content: firstHundredWords + (words.length > 100 ? '...' : ''),
+    wordCount: wordCount,
+    readTime: readTime.toFixed(2)
+  };
+  
 }
 
 // Function to clip the current page
 function clipCurrentPage() {
+  const textData = extractTextContent(document);
   const pageData = {
     title: document.title,
     url: window.location.href,
     timestamp: new Date().toISOString(),
-    content: extractTextContent(document)
+    content: textData.content,
+    wordCount: textData.wordCount,
+    readTime: textData.readTime
   };
   
   // Send the data to the background script
